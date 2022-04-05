@@ -36,7 +36,7 @@ const RaceCard = ({ race, loggedIn, drivers, selectedRaceHandler }) => {
       }
       {(!race.end && race.active && loggedIn) &&
         <div className="actions">
-          <Button onClick={() => setRace(race)} style="blue" disabled={race.voteable ? false : true}>{race.voteable ? 'Vote' : 'Expired'}</Button>
+          <Button onClick={() => setRace(race)} disabled={race.voteable ? false : true}>{race.voteable ? 'Vote' : 'Expired'}</Button>
         </div>
       }
     </div>
