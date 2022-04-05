@@ -13,6 +13,7 @@ import { Routes, Route, useNavigate } from 'react-router-dom';
 import { db } from './lib/init-firebase';
 import { collection, query, onSnapshot, orderBy } from 'firebase/firestore';
 import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut } from "firebase/auth";
+import Settings from './components/Settings/Settings';
 
 function App() {
 
@@ -110,17 +111,8 @@ function App() {
   };
 
   const selectedRaceHandler = (race) => {
-    setSelectedRace(race);
-    navigate(`race/vote`);
+    navigate(`race/vote/${race.id}`);
   };
-
-  const sortArray = ({ array, sortyBy, direction = 'asc' }) => {
-    if (direction === 'asc') {
-      return array.sort((a, b) => { if (a > b) { return 1; } else { return -1; } });
-    } else {
-      return array.sort((a, b) => { if (a > b) { return -1; } else { return 1; } });
-    }    
-  }
 
   return (
     <div className="App">
@@ -137,7 +129,7 @@ function App() {
           <Route exact path='/' element={<Races races={races} drivers={drivers} isLoading={isLoading} user={user} loggedIn={loggedIn} selectedRaceHandler={selectedRaceHandler} />} />
           <Route exact path='/login' element={<Login loginUser={loginUser} loggedIn={loggedIn} />} />
           <Route exact path='/point-race' element={<RacePoints usersPoints={usersPoints} loggedIn={loggedIn} />} />
-          <Route exact path='/race/vote' element={<Vote user={user} setVoted={setVoted} drivers={drivers} loggedIn={loggedIn} race={selectedRace} driversNumbers={selectedRace ? sortArray({array: selectedRace.drivers, sortBy: 'name'}) : undefined} />} />
+          <Route exact path='/race/vote/:id' element={<Vote user={user} drivers={drivers} loggedIn={loggedIn} />} />
           {/*<Route exact path='/uploaddriverstorace' element={<ListUsers />} />*/}
           <Route exact path='/changemymindifyouwant' element={<Admin user={user} loggedIn={loggedIn} races={races} />} />
         </Routes>

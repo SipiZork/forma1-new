@@ -1,12 +1,11 @@
 import React, { Fragment, useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { getDateFormTimestamp } from '../../utils/dateUtils';
-import { getDoc, updateDoc, doc, query, onSnapshotsInSync, onSnapshot } from 'firebase/firestore';
-import { validateCallback } from '@firebase/util';
+import { getDoc, updateDoc, doc, query, onSnapshot } from 'firebase/firestore';
 import { db } from '../../lib/init-firebase';
 import Button from '../Button/Button';
 
-const Vote = ({ user, race, drivers, setVoted, driversNumbers }) => {
+const Vote = ({ user, drivers }) => {
   const [formData, setFormData] = useState({
     first: '1',
     second: '1',
@@ -14,13 +13,18 @@ const Vote = ({ user, race, drivers, setVoted, driversNumbers }) => {
     fastestLap: '1'
   });
   const [votes, setVotes] = useState([]);
+  const [race, setRace] = useState(undefined);
   const [peopleVotes, setPeopleVotes] = useState([]);
   const [voteExists, setVoteExists] = useState(false);
+  const [driversNumbers, setDriversNumbers] = useState(undefined);
   const navigate = useNavigate();
+  const params = useParams();
 
   useEffect(() => {
     getVotes();
   }, []);
+
+  console.log(params.id);
 
   useEffect(() => {
     getDriversVote2();
@@ -38,6 +42,15 @@ const Vote = ({ user, race, drivers, setVoted, driversNumbers }) => {
     
   }, [votes]);
 
+  
+  const sortArray = ({ array, direction = 'asc' }) => {
+    if (direction === 'asc') {
+      return array.sort((a, b) => { if (a > b) { return 1; } else { return -1; } });
+    } else {
+      return array.sort((a, b) => { if (a > b) { return -1; } else { return 1; } });
+    }    
+  }
+
   const inputChangeHandler = (e) => {
     setFormData({
       ...formData,
@@ -46,16 +59,18 @@ const Vote = ({ user, race, drivers, setVoted, driversNumbers }) => {
   }
 
   const getVotes = async() => {
-    const raceRef = doc(db, 'races-datas/2022/races', race.id);
+    const raceRef = doc(db, 'races-datas/2022/races', params.id);
     const q = query(raceRef);
     onSnapshot(q, (snapshot) => {
       setVotes(snapshot.data().votes);
+      setRace(snapshot.data());
+      setDriversNumbers(sortArray({ array: snapshot.data().drivers }));
     })
   }
 
   const voteToRace = (e) => {
     e.preventDefault();
-    const raceRef = doc(db, 'races-datas/2022/races', race.id);
+    const raceRef = doc(db, 'races-datas/2022/races', params.id);
     if (voteExists) {
       votes.map(vote => {
         if (vote.user === user.uid) {
@@ -75,8 +90,6 @@ const Vote = ({ user, race, drivers, setVoted, driversNumbers }) => {
       })
     }
     updateDoc(raceRef, { votes });
-    setVoted(true);
-    navigate('/');
   }
 
   const getDriversVote = (driverNumber, driverName, i) => {
@@ -98,9 +111,8 @@ const Vote = ({ user, race, drivers, setVoted, driversNumbers }) => {
   }
 
   const getDriversVote2 = () => {
-    let allVotes = [];
+    setPeopleVotes([]);
     votes.map(async (vote) => {
-      console.log(vote);
       const userRef = doc(db, 'users', vote.user);
       const userSnap = await getDoc(userRef);
       const first = drivers.find(driver => driver.number === vote.first).name;
@@ -129,54 +141,56 @@ const Vote = ({ user, race, drivers, setVoted, driversNumbers }) => {
           <div className="info">
             <h4 className="race-name">{race.name}</h4>
             <h5>{getDateFormTimestamp(race.raceDate.seconds)}</h5>
-          </div>
-          <form className='vote-form'>
-            <div className="input-group">
-              <label>Első hely</label>
-              <select type="text" name="first" value={formData.first} onChange={(e) => inputChangeHandler(e)}>
-                  {driversNumbers && driversNumbers.map((driverNumber, i) => {
-                    const actualDriver = drivers.find(driver => driver.number === driverNumber);
-                    return (
-                      <option value={actualDriver.number} key={i}>{actualDriver.name}</option>
-                    )
-                })}
-              </select>
             </div>
-            <div className="input-group">
-              <label>Második hely</label>
-              <select type="text" name="second" value={formData.second} onChange={(e) => inputChangeHandler(e)}>
-                  {driversNumbers && driversNumbers.map((driverNumber, i) => {
-                    const actualDriver = drivers.find(driver => driver.number === driverNumber);
-                    return (
-                      <option value={actualDriver.number} key={i}>{actualDriver.name}</option>
-                    )
-                })}
-              </select>
-            </div>
-            <div className="input-group">
-              <label>Harmdik hely</label>
-              <select type="text" name="third" value={formData.third} onChange={(e) => inputChangeHandler(e)}>
-                  {driversNumbers && driversNumbers.map((driverNumber, i) => {
-                    const actualDriver = drivers.find(driver => driver.number === driverNumber);
-                    return (
-                      <option value={actualDriver.number} key={i}>{actualDriver.name}</option>
-                    )
-                })}
-              </select>
-            </div>
-            <div className="input-group">
-              <label>Leggyorsabb kör</label>
-              <select type="text" name="fastestLap" value={formData.fastestLap} onChange={(e) => inputChangeHandler(e)}>
-                  {driversNumbers && driversNumbers.map((driverNumber, i) => {
-                    const actualDriver = drivers.find(driver => driver.number === driverNumber);
-                    return (
-                      <option value={actualDriver.number} key={i}>{actualDriver.name}</option>
-                    )
-                })}
-              </select>
-              </div>
-              <Button onClick={(e) => voteToRace(e)}>{voteExists ? 'Change My Vote' : 'Vote'}</Button>
-            </form>
+            {race.voteable &&
+              <form className='vote-form'>
+                <div className="input-group">
+                  <label>Első hely</label>
+                  <select type="text" name="first" value={formData.first} onChange={(e) => inputChangeHandler(e)}>
+                    {driversNumbers && driversNumbers.map((driverNumber, i) => {
+                      const actualDriver = drivers.find(driver => driver.number === driverNumber);
+                      return (
+                        <option value={actualDriver.number} key={i}>{actualDriver.name}</option>
+                      );
+                    })}
+                  </select>
+                </div>
+                <div className="input-group">
+                  <label>Második hely</label>
+                  <select type="text" name="second" value={formData.second} onChange={(e) => inputChangeHandler(e)}>
+                    {driversNumbers && driversNumbers.map((driverNumber, i) => {
+                      const actualDriver = drivers.find(driver => driver.number === driverNumber);
+                      return (
+                        <option value={actualDriver.number} key={i}>{actualDriver.name}</option>
+                      );
+                    })}
+                  </select>
+                </div>
+                <div className="input-group">
+                  <label>Harmdik hely</label>
+                  <select type="text" name="third" value={formData.third} onChange={(e) => inputChangeHandler(e)}>
+                    {driversNumbers && driversNumbers.map((driverNumber, i) => {
+                      const actualDriver = drivers.find(driver => driver.number === driverNumber);
+                      return (
+                        <option value={actualDriver.number} key={i}>{actualDriver.name}</option>
+                      );
+                    })}
+                  </select>
+                </div>
+                <div className="input-group">
+                  <label>Leggyorsabb kör</label>
+                  <select type="text" name="fastestLap" value={formData.fastestLap} onChange={(e) => inputChangeHandler(e)}>
+                    {driversNumbers && driversNumbers.map((driverNumber, i) => {
+                      const actualDriver = drivers.find(driver => driver.number === driverNumber);
+                      return (
+                        <option value={actualDriver.number} key={i}>{actualDriver.name}</option>
+                      );
+                    })}
+                  </select>
+                </div>
+                <Button onClick={(e) => voteToRace(e)}>{voteExists ? 'Change My Vote' : 'Vote'}</Button>
+              </form>
+            }
         </div>
           <div className="drivers-votes">
             <div className='text-bold'>Racer</div>
