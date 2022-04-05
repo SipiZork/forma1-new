@@ -24,8 +24,6 @@ const Vote = ({ user, drivers }) => {
     getVotes();
   }, []);
 
-  console.log(params.id);
-
   useEffect(() => {
     getDriversVote2();
     const voteExists = votes.some(vote => vote.user === user.uid);

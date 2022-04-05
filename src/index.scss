@@ -69,10 +69,6 @@
       bottom: 1rem;
       left: 0;
       justify-content: center;
-      button {
-      
-      }
-
     }
 
   }
@@ -341,5 +337,43 @@
     padding: 1rem 2rem;
     color: white;
     font-size: 1.1rem;
+  }
+}
+
+.race-grid {
+  position: fixed;
+  left: 0;
+  top: 3rem;
+  display: flex;
+  flex-direction: column;
+  gap: .25rem;
+  height: calc(100vh - 3rem);
+  width: 6rem;
+  background-color: #2f3f3c;
+  font-size: 1.1rem;
+  color: white;
+  padding: .25rem .5rem 0 0;
+  
+  .grid-people {
+    display: grid;
+    width: 100%;
+    grid-template-columns: 1fr 1fr;
+    p {
+      display: flex;
+      justify-content: flex-start;
+      &:first-child {
+        justify-content: center;
+        width: 1.8rem;
+        border-right: 1px solid white;
+      }
+    }
+  }
+}
+
+.content {
+  &.race-grid-hover {
+    width: calc(100% - 7rem);
+    position: relative;
+    left: 7rem;
   }
 }

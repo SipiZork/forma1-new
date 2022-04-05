@@ -1,10 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import RaceCard from './RaceCard.js';
 
-import { db } from '../../lib/init-firebase';
-import { collection, query, onSnapshot } from 'firebase/firestore';
-
-const Races = ({ user, loggedIn, selectedRaceHandler, drivers, isLoading, races }) => {
+const Races = ({ loggedIn, selectedRaceHandler, drivers, isLoading, races }) => {
 
   return (
     <div className='race-list'>

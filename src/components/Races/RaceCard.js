@@ -1,7 +1,6 @@
 import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faClock } from '@fortawesome/free-solid-svg-icons'
-import { useNavigate } from 'react-router-dom';
 import { getDateFormTimestamp } from '../../utils/dateUtils';
 import Button from '../Button/Button';
 const RaceCard = ({ race, loggedIn, drivers, selectedRaceHandler }) => {

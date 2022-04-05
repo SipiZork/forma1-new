@@ -1,8 +1,6 @@
-import logo from './logo.svg';
 import './App.css';
 import './index.scss';
 import Races from './components/Races/Races';
-import ListUsers from './components/ListUsers';
 import Navbar from './components/Navbar/Navbar';
 import Login from './components/Login/Login';
 import Vote from './components/Races/Vote';
@@ -19,17 +17,17 @@ function App() {
 
   const [user, setUser] = useState(null);
   const [loggedIn, setLoggedIn] = useState(false);
-  const [selectedRace, setSelectedRace] = useState();
   const [drivers, setDrivers] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [races, setRaces] = useState([]);
   const [usersPoints, setUsersPoints] = useState([]);
-  const [voted, setVoted] = useState(false);
+  const [raceGrid, setRaceGrid] = useState(false);
+  const [raceGridHover, setRaceGridHover] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     if (user && user !== null) {
-      if (user.accessToken == (localStorage.getItem('token'))) {
+      if (user.accessToken === (localStorage.getItem('token'))) {
         setLoggedIn(true);
       }
     }
@@ -120,11 +118,14 @@ function App() {
         <Navbar user={user} loggedIn={loggedIn} logoutUser={logoutUser} />
       </header>
       <main>
-      {voted &&
-        <div className="information">
-          <div className=" access">You voted successfully</div>
-        </div>
-      }
+        {raceGrid && (
+          <div className="race-grid" onMouseEnter={() => setRaceGridHover(true)} onMouseLeave={() => setRaceGridHover(false)}>
+            {usersPoints.map((up, i) => (
+              <div className="grid-people" key={i}><p>{i+1}</p><p>{raceGridHover ? up.points : up.name.substring(0,3).toUpperCase()}</p></div>
+          ))}
+          </div>
+        )}
+        <div className={`content${raceGrid ? ' race-grid-hover' : ''}`}>
         <Routes>
           <Route exact path='/' element={<Races races={races} drivers={drivers} isLoading={isLoading} user={user} loggedIn={loggedIn} selectedRaceHandler={selectedRaceHandler} />} />
           <Route exact path='/login' element={<Login loginUser={loginUser} loggedIn={loggedIn} />} />
@@ -133,6 +134,7 @@ function App() {
           {/*<Route exact path='/uploaddriverstorace' element={<ListUsers />} />*/}
           <Route exact path='/changemymindifyouwant' element={<Admin user={user} loggedIn={loggedIn} races={races} />} />
         </Routes>
+        </div>
       </main>
     </div>
   );
