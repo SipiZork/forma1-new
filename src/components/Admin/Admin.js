@@ -24,7 +24,7 @@ const Admin = ({ loggedIn, user, races }) => {
     e.preventDefault();
     const actualRace = races.find(race => race.active);
     const raceRef = doc(db, 'races-datas/2022/races', actualRace.id);
-    if (actualRace.votes > 0) {
+    if (actualRace.votes.length > 0) {
       actualRace.votes.map(async (vote) => {
         const userRef = doc(db, 'users', vote.user);
         const userSnap = await getDoc(userRef);
