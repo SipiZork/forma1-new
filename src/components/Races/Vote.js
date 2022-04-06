@@ -143,7 +143,7 @@ const Vote = ({ user, drivers }) => {
             {race.voteable &&
               <form className='vote-form'>
                 <div className="input-group">
-                  <label>Első hely</label>
+                  <label>First Place</label>
                   <select type="text" name="first" value={formData.first} onChange={(e) => inputChangeHandler(e)}>
                     {driversNumbers && driversNumbers.map((driverNumber, i) => {
                       const actualDriver = drivers.find(driver => driver.number === driverNumber);
@@ -154,7 +154,7 @@ const Vote = ({ user, drivers }) => {
                   </select>
                 </div>
                 <div className="input-group">
-                  <label>Második hely</label>
+                  <label>Second Place</label>
                   <select type="text" name="second" value={formData.second} onChange={(e) => inputChangeHandler(e)}>
                     {driversNumbers && driversNumbers.map((driverNumber, i) => {
                       const actualDriver = drivers.find(driver => driver.number === driverNumber);
@@ -165,7 +165,7 @@ const Vote = ({ user, drivers }) => {
                   </select>
                 </div>
                 <div className="input-group">
-                  <label>Harmdik hely</label>
+                  <label>Third Place</label>
                   <select type="text" name="third" value={formData.third} onChange={(e) => inputChangeHandler(e)}>
                     {driversNumbers && driversNumbers.map((driverNumber, i) => {
                       const actualDriver = drivers.find(driver => driver.number === driverNumber);
@@ -176,7 +176,7 @@ const Vote = ({ user, drivers }) => {
                   </select>
                 </div>
                 <div className="input-group">
-                  <label>Leggyorsabb kör</label>
+                  <label>Fastest Lap</label>
                   <select type="text" name="fastestLap" value={formData.fastestLap} onChange={(e) => inputChangeHandler(e)}>
                     {driversNumbers && driversNumbers.map((driverNumber, i) => {
                       const actualDriver = drivers.find(driver => driver.number === driverNumber);
