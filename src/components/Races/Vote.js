@@ -82,8 +82,8 @@ const Vote = ({ user, drivers }) => {
       votes.push({
         first: parseInt(formData.first),
         second: parseInt(formData.second),
-        third: parseInt(formData.first),
-        fastestLap: parseInt(formData.first),
+        third: parseInt(formData.third),
+        fastestLap: parseInt(formData.fastestLap),
         user: user.uid
       })
     }
