@@ -8,10 +8,11 @@ const Admin = ({ loggedIn, user, races }) => {
 
   const [userRank, setUserRank] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [voteable, setVotable] = useState(true);
 
   useEffect(() => {
     getUserRank();
-  }, [user])
+  }, [user, userRank]);
 
   const getUserRank = async () => {
     const userRef = doc(db, 'users', user.uid);
@@ -40,11 +41,22 @@ const Admin = ({ loggedIn, user, races }) => {
     updateDoc(raceRef, { end: true, active: false });
   }
 
+  const changeVotableStatus = async (e) => {
+    e.preventDefault();
+    const actualRace = races.find(race => race.active);
+    const raceRef = doc(db, 'races-datas/2022/races', actualRace.id);
+    updateDoc(raceRef, { voteable: !actualRace.voteable });
+  };
+
   return (
     <div className='admin'>
       {(loggedIn && userRank > 10) ?
         <Button onClick={(e) => addPoints(e)}>Add points and Close Race</Button>
-        : loading ? <div>Töltés...</div> : <div>Nincs jogosultságod ehhez az oldalhoz</div>
+        : loading ? <div>Töltés...</div> : <div></div>
+      }
+      {(loggedIn && userRank > 2) ?
+        <Button onClick={(e) => changeVotableStatus(e)}>Change active race voteable status</Button>
+        : loading ? <div>Töltés...</div> : <div></div>
       }
     </div>
   )

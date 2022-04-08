@@ -292,7 +292,8 @@
 .admin {
   display: flex;
   margin-top: 2rem;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   background-color: #2f3f3c;
   padding: 2rem 0;
 }
