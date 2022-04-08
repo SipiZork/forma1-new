@@ -5,7 +5,7 @@ import { getDoc, updateDoc, doc, query, onSnapshot } from 'firebase/firestore';
 import { db } from '../../lib/init-firebase';
 import Button from '../Button/Button';
 
-const Vote = ({ user, drivers }) => {
+const Vote = ({ user, drivers, loggedIn }) => {
   const [formData, setFormData] = useState({
     first: '1',
     second: '1',
@@ -21,8 +21,10 @@ const Vote = ({ user, drivers }) => {
   const params = useParams();
 
   useEffect(() => {
-    getVotes();
-  }, []);
+    if (loggedIn) {
+      getVotes();
+    }
+  }, [loggedIn]);
 
   useEffect(() => {
     getDriversVote2();
@@ -133,7 +135,7 @@ const Vote = ({ user, drivers }) => {
 
   return (
     <div className="vote">
-      {(race && race !== null) &&
+      {(race && race !== null && loggedIn) &&
         <Fragment>
         <div className='vote-it'>
           <div className="info">
