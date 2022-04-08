@@ -11,7 +11,9 @@ const Admin = ({ loggedIn, user, races }) => {
   const [voteable, setVotable] = useState(true);
 
   useEffect(() => {
-    getUserRank();
+    if (user) {
+      getUserRank();
+    }
   }, [user, userRank]);
 
   const getUserRank = async () => {
@@ -50,13 +52,17 @@ const Admin = ({ loggedIn, user, races }) => {
 
   return (
     <div className='admin'>
-      {(loggedIn && userRank > 10) ?
-        <Button onClick={(e) => addPoints(e)}>Add points and Close Race</Button>
-        : loading ? <div>Töltés...</div> : <div></div>
+      {(loading) && 
+        <div className="info">Töltés...</div>
       }
-      {(loggedIn && userRank > 2) ?
+      {(!loading && loggedIn && userRank > 10) &&
+        <Button onClick={(e) => addPoints(e)}>Add points and Close Race</Button>
+      }
+      {(!loading && loggedIn && userRank > 2) &&
         <Button onClick={(e) => changeVotableStatus(e)}>Change active race voteable status</Button>
-        : loading ? <div>Töltés...</div> : <div></div>
+      }
+      {(!loading && (!loggedIn || userRank < 2)) &&
+        <div className="info">Nincs itt keresnivalód, irány a főoldal...</div>
       }
     </div>
   )
