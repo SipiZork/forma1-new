@@ -1,20 +1,37 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { db } from '../../lib/init-firebase';
 import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import Button from '../Button/Button';
 
 
-const Admin = ({ loggedIn, user, races }) => {
+const Admin = ({ loggedIn, user, races, drivers }) => {
 
   const [userRank, setUserRank] = useState(0);
   const [loading, setLoading] = useState(true);
-  const [voteable, setVotable] = useState(true);
 
   useEffect(() => {
     if (user) {
       getUserRank();
     }
   }, [user, userRank]);
+  
+  const setDriversToRace = async (e) => {
+    e.preventDefault();
+    const actualRace = races.find(race => race.active);
+    const raceDocRef = doc(db, 'races-datas/2022/races', /* RACE ID-T IDE ÍRD */ actualRace.id);
+    const raceSnap = await getDoc(raceDocRef);
+    if (!raceSnap.data().drivers || raceSnap.data().drivers.length < 1) {
+      let driverNumbers = [];
+      drivers.map(driver => {
+        /* HA KI KELL HAGYNI VERSENYZŐT, MÁRPEDIG KI KELL A HELYETTESÍTÉS MIATT, AKKOR ITT ADD MEG, HOGY KIT KELL KIHAGYNI*/
+        if (driver.number !== 27) {
+          driverNumbers.push(driver.number);
+        }
+      });
+      console.log(driverNumbers);
+      updateDoc(raceDocRef, { drivers: driverNumbers });
+    }
+  }
 
   const getUserRank = async () => {
     const userRef = doc(db, 'users', user.uid);
@@ -56,7 +73,10 @@ const Admin = ({ loggedIn, user, races }) => {
         <div className="info">Töltés...</div>
       }
       {(!loading && loggedIn && userRank > 10) &&
-        <Button onClick={(e) => addPoints(e)}>Add points and Close Race</Button>
+        <Fragment>
+          <Button onClick={(e) => addPoints(e)}>Add points and Close Race</Button>
+          <Button onClick={(e) => setDriversToRace(e)}>Add drivers to Active Race</Button>
+        </Fragment>
       }
       {(!loading && loggedIn && userRank > 2) &&
         <Button onClick={(e) => changeVotableStatus(e)}>Change active race voteable status</Button>

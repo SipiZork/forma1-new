@@ -132,7 +132,7 @@ function App() {
           <Route exact path='/point-race' element={<RacePoints usersPoints={usersPoints} loggedIn={loggedIn} />} />
           <Route exact path='/race/vote/:id' element={<Vote user={user} drivers={drivers} loggedIn={loggedIn} />} />
           {/*<Route exact path='/uploaddriverstorace' element={<ListUsers />} />*/}
-          <Route exact path='/changemymindifyouwant' element={<Admin user={user} loggedIn={loggedIn} races={races} />} />
+          <Route exact path='/changemymindifyouwant' element={<Admin user={user} loggedIn={loggedIn} races={races} drivers={drivers} />} />
         </Routes>
         </div>
       </main>
